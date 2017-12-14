@@ -1,0 +1,30 @@
+{
+  "name": "nodejs_mysql",
+  "version": "1.0.0",
+  "description": "",
+  "main": "mysql_crud.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "d3": "^4.12.0",
+    "d3-dispatch": "1",
+    "d3.layout.cloud": "^1.2.0",
+    "ejs": "^2.5.7",
+    "express": "^4.16.2",
+    "fs": "0.0.1-security",
+    "html": "^1.0.0",
+    "http": "0.0.0",
+    "moment": "^2.19.3",
+    "mysql": "^2.15.0",
+    "thrift": "^0.10.0",
+    "winston": "^2.4.0",
+    "winston-daily-rotate-file": "^1.7.2",
+    "xmlhttprequest": "^1.8.0"
+  }
+}

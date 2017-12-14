@@ -1,0 +1,135 @@
+<html>
+
+<head>
+  <meta charset="utf-8" />
+</head>
+
+
+<body>
+  <div id='myKeyword'>
+    <%=_keyword %>
+  </div>
+
+  <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script src="https://rawgit.com/jasondavies/d3-cloud/master/build/d3.layout.cloud.js" type="text/JavaScript"></script>
+  <script>
+    $(document).ready(function() {
+
+      const myKeyword = $('#myKeyword').text();
+      $('#myKeyword').hide();
+      let wordScale;
+      $.ajax({
+        'url': '/' + myKeyword + '/word',
+        'type': 'GET',
+        'dataType': 'json',
+        'data': {},
+        'success': function(result) {
+          console.log("result: " + result);
+          result = JSON.parse(result);
+
+
+          var width = 1800,
+            height = 900
+          //  var color = d3.scale.ordinal().range(["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854"]);
+          var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+          var max = result[0].frequency;
+          var min = result[result.length - 1].frequency;
+          var avg = (max + min) / 2;
+          wordScale = d3.scale.linear().domain([min, max]).range([15, 300]).clamp(true);
+
+          setTimeout(function() {
+            showCloud(result)
+            // setInterval(function() {
+            //   showCloud(result)
+            // }, 5000)
+          }, 1000);
+          //scale.linear: 선형적인 스케일로 표준화를 시킨다.
+          //domain: 데이터의 범위, 입력 크기
+          //range: 표시할 범위, 출력 크기
+          //clamp: domain의 범위를 넘어간 값에 대하여 domain의 최대값으로 고정시킨다.
+          // var bd1=Math.floor(result.length/30)
+          //     bd2=Math.floor(result.length/15)
+          //     bd3=Math.floor(result.length/10);
+          // console.log(result.length+" "+bd1+" "+bd2+" "+bd3);
+          // result = d.frequency;
+          // console.log(d.frequency)
+          var bd1 = Math.floor(result.length/30);
+          var bd2 = Math.floor(result.length/15);
+          var bd3 = Math.floor(result.length/10);
+
+          var keywords = [result[bd1].frequency, result[bd2].frequency, result[bd3].frequency];
+          var svg = d3.select("svg")
+            .append("g")
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+            console.log("length: "+result.length);
+          console.log(bd1+" "+bd2+" "+bd3);
+          console.log(keywords)
+
+          function showCloud(data) {
+            d3.layout.cloud().size([width, height])
+              //클라우드 레이아웃에 데이터 전달
+              .words(data)
+              .rotate(function(d) {
+                return d.word.length < 4 ? 0 : 90;
+              })
+              //스케일로 각 단어의 크기를 설정
+              .fontSize(function(d) {
+                return wordScale(d.frequency);
+              })
+              //클라우드 레이아웃을 초기화 > end이벤트 발생 > 연결된 함수 작동
+              .on("end", draw)
+              .start();
+
+            function draw(words) {
+              var cloud = svg.selectAll("text").data(words)
+              //Entering words
+              cloud.enter()
+                .append("text")
+                .style("fill", function(d) {
+                  var xSmall = "#adadad";
+                  var small = "#848484";
+                  var medium = "#474747";
+                  var big = "#1e1e1e";
+
+                  if (d.frequency >= keywords[0] ) {
+                    return big;
+                  } else if (d.frequency >= keywords[1]) {
+                    return medium;
+                  }else if(d.frequency >= keywords[2]){
+                    return small;
+                  }
+                    return xSmall;
+                })
+                .style("fill-opacity", 5)
+                .attr("text-anchor", "right")
+                .attr('font-size', 60)
+                .text(function(d) {
+                  return d.word;
+                });
+              cloud
+                .transition(0)
+                .duration(1000)
+                .style("font-size", function(d) {
+                  return d.size + "px";
+                })
+                .attr("transform", function(d) {
+                  return "translate(" + [d.x, d.y] + ")";
+                })
+                .style("fill-opacity", 1);
+            }
+          }
+
+        }
+      });
+    });
+  </script>
+  <footer>
+    <div>
+      <a href="/"><button>목록으로 돌아가기</button></a>
+  </footer>
+</body>
+
+</html>

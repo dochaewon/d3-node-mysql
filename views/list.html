@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqgrid/4.6.0/js/i18n/grid.locale-en.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/free-jqgrid/4.15.2/jquery.jqgrid.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-multiselect-widget/2.0.1/jquery.multiselect.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
+  <link rel="stylesheet" href="http://www.guriddo.net/demo/css/trirand/ui.jqgrid-bootstrap.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-multiselect-widget/2.0.1/jquery.multiselect.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  <script>
+    $.jgrid.defaults.width = 780;
+  </script>
+
+  <meta charset="utf-8" />
+
+  <title>SNS 연관 데이터 분석</title>
+</head>
+<div align="center">
+  <h1>SNS 연관 데이터 분석</h1>
+</div>
+
+<body>
+  <style type="text/css">
+    /* set the size of the datepicker search control for Order Date*/
+
+    #ui-datepicker-div {
+      font-size: 11px;
+    }
+
+    /* set the size of the autocomplete search control*/
+
+    .ui-menu-item {}
+
+    .ui-autocomplete {
+      font-size: 19px;
+    }
+
+    .mycenter>.ui-jqgrid {
+      margin-left: auto;
+      margin-right: auto;
+      label: center;
+    }
+
+
+    .ui-jqgrid tr.jqgrow {
+      outline-style: none;
+      height: 80px;
+    }
+
+    .ui-state-default {
+      text-align: center;
+    }
+
+    .ui-th-column-header {
+
+      text-align: center;
+    }
+  </style>
+  <br /><br />
+  <div class="form-group" align="center">
+    <input type="text" class="form-control" placeholder="Your keyword here" id="keywordInput" /></br>
+    <button type="submit" class="btn btn-default" id="keywordBtn">
+          Register
+      </button>
+  </div>
+
+
+  <br /><br />
+  <hr />
+  <div class="mycenter" align="center">
+    <table id="jqGrid"></table>
+    <div id="grid"></div>
+    <div id="jqGridPager"></div>
+  </div>
+  </div>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $("#jqGrid").jqGrid({
+        url: '/list',
+        mtype: "GET",
+        datatype: "json",
+        page: 1,
+        colNames: ["No", "Keyword", "tweets", "keyword regist date", "tweets sinceDate", "tweets latelyDate"],
+        colModel: [{
+            index: 'seq',
+            name: 'seq',
+            key: true,
+            sorttype: 'integer',
+            width: 30,
+            height: 20,
+            align: 'center'
+          },
+          {
+            index: 'keyword',
+            name: 'keyword',
+            align: 'center',
+            height: 20,
+            formatter: 'link',
+            formatoptions: {
+              baseLinkUrl: '/' + name
+            }
+          },
+          {
+            index: 'tweets',
+            name: 'tweets',
+            sorttype: 'integer',
+            height: 20,
+            align: 'center'
+          },
+          {
+            index: 'date',
+            name: 'date',
+            height: 20,
+            align: 'center'
+          },
+          {
+            index: 'sinceDate',
+            name: 'sinceDate',
+            height: 20,
+            align: 'center'
+          },
+          {
+            index: 'latelyDate',
+            name: 'latelyDate',
+            height: 20,
+            align: 'center'
+          }
+        ],
+        loadonce: true,
+        viewrecords: true,
+        width: 1500,
+        height: 'auto',
+        rowNum: 10,
+        gridview: true,
+        shrinkToFit: true,
+        pager: "#jqGridPager"
+
+      });
+      // activate the toolbar searching
+      $('#jqGrid').jqGrid('navGrid', "#jqGridPager", {
+        search: true, // show search button on the toolbar
+        add: false,
+        edit: false,
+        del: false,
+        refresh: true
+      });
+    });
+
+    $('#keywordBtn').click(function() {
+
+      $.ajax({
+        'url': '/insert',
+        'type': 'POST',
+        'dataType': 'json',
+        'data': {
+          'keyword': $('#keywordInput').val()
+        },
+        'success': function(result) {
+          alert(result['message']);
+        }
+      });
+
+      location.reload();
+    });
+  </script>
+</body>
+
+</html>
